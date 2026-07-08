@@ -28,6 +28,7 @@ import {
   Send,
   Mail,
   Award,
+  Menu,
 } from "lucide-react";
 
 /* ------------------------------------------------------------------ */
@@ -140,12 +141,28 @@ const NAV = [
   { id: "settings", label: "Organization settings", icon: Settings },
 ];
 
-function Sidebar({ active, onNavigate }) {
+function Sidebar({ active, onNavigate, open, onClose }) {
   return (
-    <aside className="flex w-[220px] shrink-0 flex-col border-r border-gray-100 bg-white">
+    <>
+      <div
+        onClick={onClose}
+        className={
+          "fixed inset-0 z-30 bg-gray-900/40 transition-opacity duration-200 lg:hidden " +
+          (open ? "opacity-100" : "pointer-events-none opacity-0")
+        }
+      />
+      <aside
+        className={
+          "fixed inset-y-0 left-0 z-40 flex w-[220px] shrink-0 flex-col border-r border-gray-100 bg-white transition-transform duration-200 lg:static lg:z-auto lg:translate-x-0 " +
+          (open ? "translate-x-0" : "-translate-x-full")
+        }
+      >
       <div className="flex h-16 items-center justify-between px-4">
         <Logo />
-        <button className="flex h-7 w-7 items-center justify-center rounded-md text-gray-400 transition hover:bg-gray-50 hover:text-gray-600">
+        <button
+          onClick={onClose}
+          className="flex h-7 w-7 items-center justify-center rounded-md text-gray-400 transition hover:bg-gray-50 hover:text-gray-600"
+        >
           <PanelLeftClose size={17} />
         </button>
       </div>
@@ -184,23 +201,32 @@ function Sidebar({ active, onNavigate }) {
           <p className="mt-0.5 text-xs text-blue-100">Enterprise · 100 seats</p>
         </div>
       </div>
-    </aside>
+      </aside>
+    </>
   );
 }
 
 /* ------------------------------------------------------------------ */
 /*  Top bar                                                            */
 /* ------------------------------------------------------------------ */
-function TopBar({ title, subtitle }) {
+function TopBar({ title, subtitle, onMenu }) {
   return (
-    <div className="flex items-start justify-between gap-4 px-8 pt-8">
-      <div>
-        <h1 className="text-[30px] font-extrabold leading-tight tracking-tight text-gray-900">
-          {title}
-        </h1>
-        <p className="mt-1 text-sm text-gray-500">{subtitle}</p>
+    <div className="flex items-start justify-between gap-3 px-4 pt-6 sm:px-6 lg:px-8 lg:pt-8">
+      <div className="flex min-w-0 items-start gap-3">
+        <button
+          onClick={onMenu}
+          className="mt-0.5 flex h-9 w-9 shrink-0 items-center justify-center rounded-lg border border-gray-200 bg-white text-gray-600 transition hover:bg-gray-50 lg:hidden"
+        >
+          <Menu size={18} />
+        </button>
+        <div className="min-w-0">
+          <h1 className="text-2xl font-extrabold leading-tight tracking-tight text-gray-900 sm:text-[30px]">
+            {title}
+          </h1>
+          <p className="mt-1 text-sm text-gray-500">{subtitle}</p>
+        </div>
       </div>
-      <div className="flex shrink-0 items-center gap-3">
+      <div className="flex shrink-0 items-center gap-2 sm:gap-3">
         <button className="relative flex h-9 w-9 items-center justify-center rounded-full border border-gray-200 bg-white text-gray-500 transition hover:text-gray-900">
           <Bell size={17} />
           <span className="absolute right-2 top-2 h-1.5 w-1.5 rounded-full bg-blue-600" />
@@ -386,7 +412,7 @@ function EngagementChart() {
   const rx = renewalIdx * step;
   return (
     <div className="w-full overflow-x-auto">
-      <svg viewBox={`0 0 ${width} ${height + 20}`} className="w-full" style={{ minWidth: 480 }}>
+      <svg viewBox={`0 0 ${width} ${height + 20}`} className="w-full" style={{ minWidth: 280 }}>
         <defs>
           <linearGradient id="engFill" x1="0" y1="0" x2="0" y2="1">
             <stop offset="0%" stopColor="#2563EB" stopOpacity="0.16" />
@@ -415,14 +441,14 @@ function EngagementChart() {
 function ProofRenewal() {
   const toast = useToast();
   return (
-    <div className="space-y-6 px-8 pb-12 pt-6">
+    <div className="space-y-6 px-4 pb-12 pt-6 sm:px-6 lg:px-8">
       {/* Export banner */}
       <Card className="flex flex-col gap-4 p-5 sm:flex-row sm:items-center sm:justify-between">
-        <div className="flex items-center gap-3">
+        <div className="flex min-w-0 items-center gap-3">
           <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-blue-50 text-blue-600">
             <ShieldCheck size={22} />
           </div>
-          <div>
+          <div className="min-w-0">
             <p className="font-semibold text-gray-900">Renewal packet ready</p>
             <p className="text-sm text-gray-500">
               Q3 FY26 · Acme Corp · Renews Dec 12, 2026 · Compiled from live account data
@@ -471,7 +497,7 @@ function ProofRenewal() {
 
       {/* Proof of learning + trend */}
       <section className="grid grid-cols-1 gap-6 xl:grid-cols-3">
-        <div className="xl:col-span-2">
+        <div className="min-w-0 xl:col-span-2">
           <div className="mb-3">
             <h2 className="text-base font-bold text-gray-900">Proof of Learning</h2>
             <p className="text-sm text-gray-500">
@@ -494,7 +520,7 @@ function ProofRenewal() {
           </div>
         </div>
 
-        <div className="space-y-4 xl:col-span-1">
+        <div className="min-w-0 space-y-4 xl:col-span-1">
           <Card className="p-5">
             <div className="mb-1 flex items-center justify-between">
               <h3 className="text-base font-bold text-gray-900">Engagement trend</h3>
@@ -879,9 +905,9 @@ function CohortsNudges() {
   ];
 
   return (
-    <div className="grid grid-cols-1 gap-6 px-8 pb-12 pt-6 lg:grid-cols-[320px_1fr]">
+    <div className="grid grid-cols-1 gap-6 px-4 pb-12 pt-6 sm:px-6 lg:grid-cols-[320px_1fr] lg:px-8">
       {/* Left — cohort list */}
-      <Card className="flex h-fit flex-col p-4">
+      <Card className="flex h-fit min-w-0 flex-col p-4">
         <div className="mb-3 flex items-center justify-between">
           <h2 className="text-base font-bold text-gray-900">Cohorts</h2>
           <button
@@ -906,15 +932,15 @@ function CohortsNudges() {
       </Card>
 
       {/* Right — config panel */}
-      <Card className="flex flex-col overflow-hidden">
+      <Card className="flex min-w-0 flex-col overflow-hidden">
         <div className="flex flex-col gap-4 border-b border-gray-100 p-5 sm:flex-row sm:items-center sm:justify-between">
-          <div className="flex items-center gap-3">
+          <div className="flex min-w-0 items-center gap-3">
             <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-blue-50 text-blue-600">
               <Users size={22} />
             </div>
-            <div>
+            <div className="min-w-0">
               <div className="flex items-center gap-2">
-                <h2 className="text-lg font-bold text-gray-900">{cohort.name}</h2>
+                <h2 className="truncate text-lg font-bold text-gray-900">{cohort.name}</h2>
                 <span className="rounded-full bg-gray-100 px-2 py-0.5 text-xs font-semibold text-gray-500">
                   {cohort.seats} seats
                 </span>
@@ -1065,7 +1091,7 @@ function severityChip(sev) {
 
 function AtRiskRow({ r, toast }) {
   return (
-    <div className="grid grid-cols-[1.6fr_1fr_0.7fr_1.3fr_auto] items-center gap-3 border-b border-gray-50 px-4 py-3 last:border-0 hover:bg-gray-50/60">
+    <div className="flex flex-col gap-2.5 border-b border-gray-50 px-4 py-3 last:border-0 hover:bg-gray-50/60 sm:grid sm:grid-cols-[minmax(0,1.6fr)_minmax(0,1fr)_minmax(0,0.7fr)_minmax(0,1.3fr)_auto] sm:items-center sm:gap-3">
       <div className="flex items-center gap-3">
         <Avatar name={r.name} className="h-9 w-9 text-xs" />
         <div className="min-w-0">
@@ -1073,19 +1099,25 @@ function AtRiskRow({ r, toast }) {
           <p className="truncate text-xs text-gray-500">{r.role}</p>
         </div>
       </div>
-      <span className="text-sm text-gray-500">{r.lastActive}</span>
-      <span className="flex items-center gap-1 text-sm font-semibold text-gray-700">
-        <Flame size={14} className={r.streak > 0 ? "text-orange-500" : "text-gray-300"} />
-        {r.streak}
-      </span>
-      <span className={"w-fit rounded-full px-2 py-1 text-xs font-medium " + severityChip(r.severity)}>
-        {r.reason}
-      </span>
+      <div className="flex flex-wrap items-center gap-x-3 gap-y-2 sm:contents">
+        <span className="text-sm text-gray-500">
+          <span className="text-gray-400 sm:hidden">Last active · </span>
+          {r.lastActive}
+        </span>
+        <span className="flex items-center gap-1 text-sm font-semibold text-gray-700">
+          <Flame size={14} className={r.streak > 0 ? "text-orange-500" : "text-gray-300"} />
+          {r.streak}
+          <span className="text-xs font-normal text-gray-400 sm:hidden">day streak</span>
+        </span>
+        <span className={"w-fit rounded-full px-2 py-1 text-xs font-medium " + severityChip(r.severity)}>
+          {r.reason}
+        </span>
+      </div>
       <button
         onClick={() =>
           toast({ title: `Nudge sent to ${r.name}`, body: "Lesson reminder delivered via Push + Email" })
         }
-        className="inline-flex items-center gap-1.5 rounded-lg bg-blue-600 px-3 py-1.5 text-xs font-semibold text-white transition hover:bg-blue-700"
+        className="inline-flex w-full items-center justify-center gap-1.5 rounded-lg bg-blue-600 px-3 py-1.5 text-xs font-semibold text-white transition hover:bg-blue-700 sm:w-auto"
       >
         <Send size={13} /> Send nudge
       </button>
@@ -1133,7 +1165,7 @@ function SpacedReviewViz() {
 function Engagement() {
   const toast = useToast();
   return (
-    <div className="space-y-6 px-8 pb-12 pt-6">
+    <div className="space-y-6 px-4 pb-12 pt-6 sm:px-6 lg:px-8">
       {/* Health strip */}
       <section>
         <div className="mb-3 flex items-center justify-between">
@@ -1161,13 +1193,13 @@ function Engagement() {
       {/* At-risk table + streaks */}
       <section className="grid grid-cols-1 gap-6 xl:grid-cols-3">
         {/* At-risk table */}
-        <Card className="flex flex-col overflow-hidden xl:col-span-2">
+        <Card className="flex min-w-0 flex-col overflow-hidden xl:col-span-2">
           <div className="flex items-center justify-between gap-4 p-5">
-            <div className="flex items-center gap-3">
+            <div className="flex min-w-0 items-center gap-3">
               <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-red-50 text-red-500">
                 <AlertTriangle size={20} />
               </div>
-              <div>
+              <div className="min-w-0">
                 <h3 className="text-base font-bold text-gray-900">At-risk learners</h3>
                 <p className="text-sm text-gray-500">Inactive 3+ days — intervene before they churn, no CS ticket</p>
               </div>
@@ -1181,7 +1213,7 @@ function Engagement() {
               <Send size={13} /> Nudge all
             </button>
           </div>
-          <div className="grid grid-cols-[1.6fr_1fr_0.7fr_1.3fr_auto] gap-3 border-y border-gray-100 bg-gray-50/60 px-4 py-2 text-[11px] font-semibold uppercase tracking-wide text-gray-400">
+          <div className="hidden grid-cols-[minmax(0,1.6fr)_minmax(0,1fr)_minmax(0,0.7fr)_minmax(0,1.3fr)_auto] gap-3 border-y border-gray-100 bg-gray-50/60 px-4 py-2 text-[11px] font-semibold uppercase tracking-wide text-gray-400 sm:grid">
             <span>Learner</span>
             <span>Last active</span>
             <span>Streak</span>
@@ -1196,7 +1228,7 @@ function Engagement() {
         </Card>
 
         {/* Streaks & microlearning */}
-        <div className="space-y-4 xl:col-span-1">
+        <div className="min-w-0 space-y-4 xl:col-span-1">
           <Card className="p-5">
             <div className="mb-3 flex items-center justify-between">
               <div>
@@ -1277,7 +1309,7 @@ function Engagement() {
 /* ================================================================== */
 function Placeholder({ title }) {
   return (
-    <div className="px-8 pb-12 pt-6">
+    <div className="px-4 pb-12 pt-6 sm:px-6 lg:px-8">
       <Card className="flex flex-col items-center justify-center gap-3 py-20 text-center">
         <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-gray-100 text-gray-400">
           <Trophy size={22} />
@@ -1314,6 +1346,7 @@ export default function App() {
     return NAV.some((n) => n.id === hash) ? hash : "proof";
   });
   const [toasts, setToasts] = useState([]);
+  const [sidebarOpen, setSidebarOpen] = useState(false);
 
   const pushToast = useCallback((t) => {
     const id = Math.random().toString(36).slice(2);
@@ -1326,9 +1359,17 @@ export default function App() {
   return (
     <ToastCtx.Provider value={pushToast}>
       <div className="flex h-screen w-full overflow-hidden bg-[#F7F8FA] text-gray-900">
-        <Sidebar active={active} onNavigate={setActive} />
-        <main className="flex flex-1 flex-col overflow-y-auto">
-          <TopBar title={meta.title} subtitle={meta.subtitle} />
+        <Sidebar
+          active={active}
+          onNavigate={(id) => {
+            setActive(id);
+            setSidebarOpen(false);
+          }}
+          open={sidebarOpen}
+          onClose={() => setSidebarOpen(false)}
+        />
+        <main className="flex min-w-0 flex-1 flex-col overflow-y-auto">
+          <TopBar title={meta.title} subtitle={meta.subtitle} onMenu={() => setSidebarOpen(true)} />
           {active === "proof" ? (
             <ProofRenewal />
           ) : active === "cohorts" ? (
